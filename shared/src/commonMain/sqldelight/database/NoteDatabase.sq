@@ -1,0 +1,11 @@
+CREATE TABLE notes (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL
+);
+
+addNote:
+INSERT INTO notes (title, content) VALUES (?, ?);
+
+getNotes:
+SELECT * FROM notes;
