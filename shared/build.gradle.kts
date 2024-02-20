@@ -32,6 +32,8 @@ kotlin {
             implementation(libs.koin.core)
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
+            // Ktor
+            implementation(libs.ktor.client.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -39,10 +41,14 @@ kotlin {
         androidMain.dependencies {
             // SQLDelight Android Driver
             implementation(libs.sqldelight.driver.android)
+            // Ktor
+            implementation(libs.ktor.client.okhttp)
         }
         iosMain.dependencies {
             // SQLDelight IOS Driver
             implementation(libs.sqldelight.driver.ios)
+            // Ktor
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

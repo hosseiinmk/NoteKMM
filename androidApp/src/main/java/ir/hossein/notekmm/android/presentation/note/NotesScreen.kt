@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun NotesScreen(viewModel: NotesViewModel = koinViewModel()) {
 
-    val state = viewModel.notes.value
+    val state by viewModel.state
 
     if (state.notes.isEmpty()) EmptyScreen()
     else {
@@ -46,8 +47,8 @@ fun NotesItem(note: Note) {
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .padding(8.dp)
-            .background(color = Color.LightGray)
             .clip(shape = RoundedCornerShape(8.dp))
+            .background(color = Color.LightGray)
             .padding(8.dp)
     ) {
         Text(text = note.title)

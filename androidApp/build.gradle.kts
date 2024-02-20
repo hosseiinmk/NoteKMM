@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
     debugImplementation(libs.compose.ui.tooling)
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
     // Koin
     implementation(libs.koin.android.compose)
     // Compose ViewModel

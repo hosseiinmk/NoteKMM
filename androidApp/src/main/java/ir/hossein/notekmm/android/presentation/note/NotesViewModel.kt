@@ -10,8 +10,8 @@ class NotesViewModel(
     private val getNotesUseCase: GetNotesUseCase,
 ) : ViewModel() {
 
-    private val _notes = mutableStateOf(NotesUiState())
-    val notes = _notes
+    private val _state = mutableStateOf(NotesUiState())
+    val state = _state
 
     init {
         getNotes()
@@ -20,7 +20,7 @@ class NotesViewModel(
     private fun getNotes() {
         viewModelScope.launch {
             getNotesUseCase().collect {
-                _notes.value = notes.value.copy(notes = it)
+                _state.value = state.value.copy(notes = it)
             }
         }
     }

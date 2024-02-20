@@ -5,16 +5,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ir.hossein.notekmm.android.utilities.Constant
 import ir.hossein.notekmm.android.presentation.addNote.AddNoteScreen
+import ir.hossein.notekmm.android.presentation.document.DocumentScreen
 import ir.hossein.notekmm.android.presentation.note.NotesScreen
 import ir.hossein.notekmm.android.presentation.theme.MyApplicationTheme
 import ir.hossein.notekmm.android.utilities.BottomBarItems
@@ -39,7 +44,10 @@ class MainActivity : ComponentActivity() {
                             },
                             gotoAddNote = { route ->
                                 if (route != currentDestination) navController.navigate(route = route)
-                            }
+                            },
+                            gotoDocument = { route ->
+                                if (route != currentDestination) navController.navigate(route = route)
+                            },
                         )
                     }) {
                         NavHost(
@@ -55,6 +63,9 @@ class MainActivity : ComponentActivity() {
                                     gotoNotes = { navController.popBackStack() }
                                 )
                             }
+                            composable(route = Constant.DOCUMENT) {
+                                DocumentScreen()
+                            }
                         }
                     }
                 }
@@ -66,7 +77,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BottomBar(
     gotoNotes: (String) -> Unit,
-    gotoAddNote: (String) -> Unit
+    gotoAddNote: (String) -> Unit,
+    gotoDocument: (String) -> Unit
 ) {
     BottomAppBar(
         actions = {
@@ -76,14 +88,26 @@ fun BottomBar(
                     contentDescription = BottomBarItems.Notes.label
                 )
             }
+            IconButton(onClick = { gotoDocument(BottomBarItems.Document.route) }) {
+                Icon(
+                    imageVector = BottomBarItems.Document.icon,
+                    contentDescription = BottomBarItems.Document.label
+                )
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { gotoAddNote(BottomBarItems.AddNote.route) }) {
+            FloatingActionButton(
+                onClick = { gotoAddNote(BottomBarItems.AddNote.route) },
+                modifier = Modifier.clip(RoundedCornerShape(50.dp)),
+                containerColor = Color(0xFF0E86D4),
+                contentColor = Color.White
+            ) {
                 Icon(
                     imageVector = BottomBarItems.AddNote.icon,
                     contentDescription = BottomBarItems.AddNote.label
                 )
             }
-        }
+        },
+        containerColor = Color(0xFFf2f2f2)
     )
 }
