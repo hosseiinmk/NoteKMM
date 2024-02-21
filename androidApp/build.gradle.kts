@@ -54,4 +54,7 @@ dependencies {
     implementation(libs.emoji2)
     // Compose Navigation
     implementation(libs.compose.navigation)
+    // Coil
+    implementation(libs.coil)
+
 }

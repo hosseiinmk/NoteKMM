@@ -2,7 +2,6 @@ package ir.hossein.notekmm.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import ir.hossein.notekmm.data.local.NoteDatabaseDriverFactory
-import ir.hossein.notekmm.data.remote.KtorApiClient
 import ir.hossein.notekmm.database.NoteDatabase
 import ir.hossein.notekmm.domain.model.Note
 import ir.hossein.notekmm.domain.repository.NoteRepository
@@ -28,6 +27,4 @@ class NoteRepositoryImpl(driver: NoteDatabaseDriverFactory) : NoteRepository {
         title: String,
         content: String
     ): Note = Note(id = id.toInt(), title = title, content = content)
-
-    override suspend fun getDoc(): String = KtorApiClient().getDoc()
 }

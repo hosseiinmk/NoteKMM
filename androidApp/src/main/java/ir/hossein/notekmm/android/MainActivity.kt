@@ -19,9 +19,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ir.hossein.notekmm.android.utilities.Constant
 import ir.hossein.notekmm.android.presentation.addNote.AddNoteScreen
-import ir.hossein.notekmm.android.presentation.document.DocumentScreen
 import ir.hossein.notekmm.android.presentation.note.NotesScreen
 import ir.hossein.notekmm.android.presentation.theme.MyApplicationTheme
+import ir.hossein.notekmm.android.presentation.tvShow.TvShowsScreen
 import ir.hossein.notekmm.android.utilities.BottomBarItems
 
 class MainActivity : ComponentActivity() {
@@ -63,8 +63,8 @@ class MainActivity : ComponentActivity() {
                                     gotoNotes = { navController.popBackStack() }
                                 )
                             }
-                            composable(route = Constant.DOCUMENT) {
-                                DocumentScreen()
+                            composable(route = Constant.TV_SHOWS) {
+                                TvShowsScreen()
                             }
                         }
                     }
@@ -88,10 +88,10 @@ fun BottomBar(
                     contentDescription = BottomBarItems.Notes.label
                 )
             }
-            IconButton(onClick = { gotoDocument(BottomBarItems.Document.route) }) {
+            IconButton(onClick = { gotoDocument(BottomBarItems.TvShows.route) }) {
                 Icon(
-                    imageVector = BottomBarItems.Document.icon,
-                    contentDescription = BottomBarItems.Document.label
+                    imageVector = BottomBarItems.TvShows.icon,
+                    contentDescription = BottomBarItems.TvShows.label
                 )
             }
         },

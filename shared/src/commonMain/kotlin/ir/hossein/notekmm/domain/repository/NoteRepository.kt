@@ -8,6 +8,4 @@ interface NoteRepository {
     suspend fun addNote(note: Note)
 
     suspend fun getNotes(): Flow<List<Note>>
-
-    suspend fun getDoc(): String
 }
