@@ -16,21 +16,41 @@ class TvShowsViewModel(
     val state = _state
 
     init {
-        getTvShows()
+        getTvShows(false)
     }
 
-    fun updateState(newState: TvShowsUiState) {
+    private fun getState() = state.value
+
+    private fun updateState(newState: TvShowsUiState) {
         _state.value = newState
     }
 
-    fun loadMore() { getTvShows() }
+    fun loadMore() {
+        updateState(getState().copy(page = getState().page + 1))
+        getTvShows(true)
+    }
 
-    private fun getTvShows() {
-        updateState(state.value.copy(isLoading = true))
+    private fun getTvShows(loadingMore: Boolean) {
+        enableLoading(loadingMore)
         viewModelScope.launch {
             getTvShowsUseCase(_state.value.page).collect {
-                updateState(state.value.copy(tvShows = it, isLoading = false))
+                updateState(getState().copy(tvShows = it))
+                disableLoading(loadingMore)
             }
+        }
+    }
+
+    private fun enableLoading(loadingMore: Boolean) {
+        when(loadingMore) {
+            false -> updateState(getState().copy(isLoading = true))
+            true -> updateState(getState().copy(isLoadingMore = true))
+        }
+    }
+
+    private fun disableLoading(loadingMore: Boolean) {
+        when(loadingMore) {
+            false -> updateState(getState().copy(isLoading = false))
+            true -> updateState(getState().copy(isLoadingMore = false))
         }
     }
 }

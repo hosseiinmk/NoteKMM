@@ -14,7 +14,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,14 +49,17 @@ fun TvShowsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (state.isLoading) item { CircularProgressIndicator() }
-        items(state.tvShows) {
-            TvShowItem(tvShow = it)
-        }
-        if (!state.isLoading) {
-            if (listState.isScrolledToTheEnd()) {
-                viewModel.updateState(state.copy(page = state.page + 1))
-                viewModel.loadMore()
-                println("load more page ${state.page}")
+        else {
+            items(state.tvShows) {
+                TvShowItem(tvShow = it)
+            }
+            if (state.isLoadingMore) item { CircularProgressIndicator() }
+            else {
+                item {
+                    IconButton(onClick = { viewModel.loadMore() }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    }
+                }
             }
         }
     }
@@ -86,6 +93,3 @@ fun TvShowItem(tvShow: TvShow) {
         }
     }
 }
-
-fun LazyListState.isScrolledToTheEnd(): Boolean =
-    layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
