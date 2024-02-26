@@ -56,5 +56,4 @@ dependencies {
     implementation(libs.compose.navigation)
     // Coil
     implementation(libs.coil)
-
 }

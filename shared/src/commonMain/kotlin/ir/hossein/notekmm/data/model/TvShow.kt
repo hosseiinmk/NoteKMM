@@ -10,12 +10,13 @@ data class TvShowResponse(
     @SerialName("tv_shows")
     val tvShows: List<TvShow>
 )
+
 @Serializable
 data class TvShow(
     val id: Int,
     val name: String,
     @SerialName("start_date")
-    val startDate: String,
+    val startDate: String?,
     val status: String,
     @SerialName("image_thumbnail_path")
     val thumbnail: String,

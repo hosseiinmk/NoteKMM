@@ -23,6 +23,7 @@ import ir.hossein.notekmm.android.presentation.note.NotesScreen
 import ir.hossein.notekmm.android.presentation.theme.MyApplicationTheme
 import ir.hossein.notekmm.android.presentation.tvShow.TvShowsScreen
 import ir.hossein.notekmm.android.utilities.BottomBarItems
+import ir.hossein.notekmm.android.utilities.navigateTo
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,20 +35,12 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentDestination = navBackStackEntry?.destination?.route
 
                     Scaffold(bottomBar = {
                         BottomBar(
-                            gotoNotes = { route ->
-                                if (route != currentDestination) navController.popBackStack()
-                            },
-                            gotoAddNote = { route ->
-                                if (route != currentDestination) navController.navigate(route = route)
-                            },
-                            gotoDocument = { route ->
-                                if (route != currentDestination) navController.navigate(route = route)
-                            },
+                            gotoNotes = { route -> navController.navigateTo(route = route) },
+                            gotoAddNote = { route -> navController.navigateTo(route = route) },
+                            gotoTvShows = { route -> navController.navigateTo(route = route) },
                         )
                     }) {
                         NavHost(
@@ -60,11 +53,17 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(route = Constant.ADD_NOTE_ROUTE) {
                                 AddNoteScreen(
-                                    gotoNotes = { navController.popBackStack() }
+                                    gotoNotes = {
+                                        navController.navigateTo(route = BottomBarItems.Notes.route)
+                                    }
                                 )
                             }
                             composable(route = Constant.TV_SHOWS) {
-                                TvShowsScreen()
+                                TvShowsScreen(
+                                    onBack = {
+                                        navController.navigateTo(route = BottomBarItems.Notes.route)
+                                    }
+                                )
                             }
                         }
                     }
@@ -78,7 +77,7 @@ class MainActivity : ComponentActivity() {
 fun BottomBar(
     gotoNotes: (String) -> Unit,
     gotoAddNote: (String) -> Unit,
-    gotoDocument: (String) -> Unit
+    gotoTvShows: (String) -> Unit
 ) {
     BottomAppBar(
         actions = {
@@ -88,7 +87,7 @@ fun BottomBar(
                     contentDescription = BottomBarItems.Notes.label
                 )
             }
-            IconButton(onClick = { gotoDocument(BottomBarItems.TvShows.route) }) {
+            IconButton(onClick = { gotoTvShows(BottomBarItems.TvShows.route) }) {
                 Icon(
                     imageVector = BottomBarItems.TvShows.icon,
                     contentDescription = BottomBarItems.TvShows.label

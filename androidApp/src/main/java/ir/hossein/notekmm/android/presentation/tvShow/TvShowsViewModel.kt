@@ -1,11 +1,10 @@
 package ir.hossein.notekmm.android.presentation.tvShow
 
-import androidx.compose.foundation.lazy.LazyListLayoutInfo
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ir.hossein.notekmm.domain.usecase.GetTvShowsUseCase
+import ir.hossein.notekmm.utilities.ApiResponse
 import kotlinx.coroutines.launch
 
 class TvShowsViewModel(
@@ -26,16 +25,27 @@ class TvShowsViewModel(
     }
 
     fun loadMore() {
-        updateState(getState().copy(page = getState().page + 1))
+        nextPage()
         getTvShows(true)
     }
 
     private fun getTvShows(loadingMore: Boolean) {
         enableLoading(loadingMore)
         viewModelScope.launch {
-            getTvShowsUseCase(_state.value.page).collect {
-                updateState(getState().copy(tvShows = it))
-                disableLoading(loadingMore)
+            getTvShowsUseCase(_state.value.page).let { response ->
+                when(response) {
+                    is ApiResponse.OnSuccess -> {
+                        response.data.collect { newTvShows ->
+                            updateState(getState().copy(tvShows = getState().tvShows + newTvShows))
+                            disableLoading(loadingMore)
+                        }
+                    }
+                    is ApiResponse.OnFailure -> {
+                        previousPage()
+                        disableLoading(true)
+                        println(response.message)
+                    }
+                }
             }
         }
     }
@@ -52,5 +62,13 @@ class TvShowsViewModel(
             false -> updateState(getState().copy(isLoading = false))
             true -> updateState(getState().copy(isLoadingMore = false))
         }
+    }
+
+    private fun nextPage() {
+        updateState(getState().copy(page = getState().page + 1))
+    }
+
+    private fun previousPage() {
+        updateState(getState().copy(page = getState().page - 1))
     }
 }

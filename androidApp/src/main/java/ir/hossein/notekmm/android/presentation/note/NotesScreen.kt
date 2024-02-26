@@ -1,5 +1,6 @@
 package ir.hossein.notekmm.android.presentation.note
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,9 @@ import ir.hossein.notekmm.domain.model.Note
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun NotesScreen(viewModel: NotesViewModel = koinViewModel()) {
+fun NotesScreen(
+    viewModel: NotesViewModel = koinViewModel()
+) {
 
     val state by viewModel.state
 
