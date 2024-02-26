@@ -15,10 +15,15 @@ class AddNoteViewModel(private val addNoteUseCase: AddNoteUseCase) : ViewModel()
     fun addNote(note: Note) {
         viewModelScope.launch {
             addNoteUseCase(note = note)
+            clearNote()
         }
     }
 
     fun updateState(newState: AddNoteUiState) {
         _state.value = newState
+    }
+
+    private fun clearNote() {
+        updateState(state.value.copy(title = "", content = ""))
     }
 }

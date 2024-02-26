@@ -1,11 +1,9 @@
 package ir.hossein.notekmm.android.presentation.note
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import ir.hossein.notekmm.domain.model.Note
 import org.koin.androidx.compose.koinViewModel
 
@@ -56,21 +56,29 @@ fun NotesItem(
     note: Note,
     deleteNote: () -> Unit
 ) {
-    Row(
-        Modifier
+    ConstraintLayout(
+        modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.LightGray)
-            .height(IntrinsicSize.Min)
             .padding(8.dp)
             .clip(shape = RoundedCornerShape(8.dp))
+            .background(color = Color.LightGray)
             .padding(8.dp)
     ) {
-        Column() {
+        val (column, deleteBtn) = createRefs()
+
+        Column(Modifier.constrainAs(column) {
+            start.linkTo(parent.start)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+            height = Dimension.fillToConstraints
+        }) {
             Text(text = note.title)
-            Spacer(modifier = Modifier.height(8.dp))
             Text(text = note.content)
         }
-        IconButton(onClick = { deleteNote() }) {
+        IconButton(onClick = { deleteNote() }, modifier = Modifier.constrainAs(deleteBtn) {
+            end.linkTo(parent.end)
+            top.linkTo(parent.top)
+        }) {
             Icon(imageVector = Icons.Default.Delete, contentDescription = null)
         }
     }

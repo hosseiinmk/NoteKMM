@@ -56,4 +56,6 @@ dependencies {
     implementation(libs.compose.navigation)
     // Coil
     implementation(libs.coil)
+    // Constraint Layout
+    implementation(libs.constraint.layout)
 }
