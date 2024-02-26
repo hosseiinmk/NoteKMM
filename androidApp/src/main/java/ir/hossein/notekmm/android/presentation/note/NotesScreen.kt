@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,26 +42,37 @@ fun NotesScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             items(state.notes) { note ->
-                NotesItem(note = note)
+                NotesItem(
+                    note = note,
+                    deleteNote = { viewModel.deleteNote(note = note) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun NotesItem(note: Note) {
-    Column(
+fun NotesItem(
+    note: Note,
+    deleteNote: () -> Unit
+) {
+    Row(
         Modifier
             .fillMaxWidth()
+            .background(color = Color.LightGray)
             .height(IntrinsicSize.Min)
             .padding(8.dp)
             .clip(shape = RoundedCornerShape(8.dp))
-            .background(color = Color.LightGray)
             .padding(8.dp)
     ) {
-        Text(text = note.title)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = note.content)
+        Column() {
+            Text(text = note.title)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = note.content)
+        }
+        IconButton(onClick = { deleteNote() }) {
+            Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+        }
     }
 }
 

@@ -4,8 +4,11 @@ CREATE TABLE notes (
     content TEXT NOT NULL
 );
 
+getNotes:
+SELECT * FROM notes;
+
 addNote:
 INSERT INTO notes (title, content) VALUES (?, ?);
 
-getNotes:
-SELECT * FROM notes;
+deleteNote:
+DELETE FROM notes WHERE id = ?;

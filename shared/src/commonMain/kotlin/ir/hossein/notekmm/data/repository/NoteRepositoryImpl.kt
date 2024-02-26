@@ -27,4 +27,10 @@ class NoteRepositoryImpl(driver: NoteDatabaseDriverFactory) : NoteRepository {
         title: String,
         content: String
     ): Note = Note(id = id.toInt(), title = title, content = content)
+
+    override suspend fun deleteNote(note: Note) {
+        dbQuery.transaction {
+            dbQuery.deleteNote(id = note.id.toLong())
+        }
+    }
 }

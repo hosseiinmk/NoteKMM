@@ -10,9 +10,11 @@ import ir.hossein.notekmm.data.repository.TvShowRepositoryImpl
 import ir.hossein.notekmm.domain.repository.NoteRepository
 import ir.hossein.notekmm.domain.repository.TvShowRepository
 import ir.hossein.notekmm.domain.usecase.AddNoteUseCase
+import ir.hossein.notekmm.domain.usecase.DeleteNoteUseCase
 import ir.hossein.notekmm.domain.usecase.GetNotesUseCase
 import ir.hossein.notekmm.domain.usecase.GetTvShowsUseCase
 import ir.hossein.notekmm.domain.usecase.implementation.AddNoteUseCaseImpl
+import ir.hossein.notekmm.domain.usecase.implementation.DeleteNoteUseCaseImpl
 import ir.hossein.notekmm.domain.usecase.implementation.GetNotesUseCaseImpl
 import ir.hossein.notekmm.domain.usecase.implementation.GetTvShowsUseCaseImpl
 import ir.hossein.notekmm.utilities.TvShowMapper
@@ -33,12 +35,14 @@ val repositoryModule = module {
     singleOf(::TvShowRepositoryImpl) {bind<TvShowRepository>()}
     factoryOf(::GetNotesUseCaseImpl)
     factoryOf(::AddNoteUseCaseImpl)
+    factoryOf(::DeleteNoteUseCaseImpl)
     factoryOf(::GetTvShowsUseCaseImpl)
 }
 
 val useCaseModule = module {
     singleOf(::GetNotesUseCaseImpl) {bind<GetNotesUseCase>()}
     singleOf(::AddNoteUseCaseImpl) {bind<AddNoteUseCase>()}
+    singleOf(::DeleteNoteUseCaseImpl) {bind<DeleteNoteUseCase>()}
     singleOf(::GetTvShowsUseCaseImpl) {bind<GetTvShowsUseCase>()}
 }
 
