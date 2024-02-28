@@ -13,12 +13,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ir.hossein.notekmm.android.presentation.addNote.AddNoteScreen
 import ir.hossein.notekmm.android.presentation.note.NotesScreen
@@ -32,11 +34,14 @@ fun MainScreen() {
 
     val navController = rememberNavController()
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     Scaffold(bottomBar = {
         BottomBar(
-            gotoNotes = { navController.popBackStack() },
-            gotoAddNote = { route -> navController.navigateTo(route = route) },
-            gotoTvShows = { route -> navController.navigateTo(route = route) },
+            gotoNotes = { route -> navController.navigateTo(currentRoute = currentRoute, route = route) },
+            gotoAddNote = { route -> navController.navigateTo(currentRoute = currentRoute, route = route) },
+            gotoTvShows = { route -> navController.navigateTo(currentRoute = currentRoute, route = route) },
         )
     }) {
         NavHost(
@@ -60,14 +65,14 @@ fun MainScreen() {
             ) {
                 AddNoteScreen(
                     gotoNotes = {
-                        navController.navigateTo(route = BottomBarItems.Notes.route)
+                        navController.navigateTo(currentRoute = currentRoute, route = BottomBarItems.Notes.route)
                     }
                 )
             }
             composable(route = Constant.TV_SHOWS) {
                 TvShowsScreen(
                     onBack = {
-                        navController.navigateTo(route = BottomBarItems.Notes.route)
+                        navController.navigateTo(currentRoute = currentRoute, route = BottomBarItems.Notes.route)
                     }
                 )
             }

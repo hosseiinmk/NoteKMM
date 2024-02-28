@@ -1,8 +1,10 @@
 package ir.hossein.notekmm.android.presentation.tvShow
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ir.hossein.notekmm.android.utilities.randomColor
 import ir.hossein.notekmm.domain.usecase.GetTvShowsUseCase
 import ir.hossein.notekmm.utilities.ApiResponse
 import kotlinx.coroutines.launch
@@ -13,6 +15,8 @@ class TvShowsViewModel(
 
     private val _state = mutableStateOf(TvShowsUiState())
     val state = _state
+
+    private val list = mutableListOf<Color>()
 
     init { getTvShows() }
 
@@ -34,6 +38,7 @@ class TvShowsViewModel(
                         response.data.collect { newTvShows ->
                             updateState(getState().copy(tvShows = getState().tvShows + newTvShows))
                             hideLoading()
+                            generateRandomColorList(newTvShowsSize = newTvShows.size)
                         }
                     }
 
@@ -59,5 +64,12 @@ class TvShowsViewModel(
             true -> updateState(getState().copy(loadingMore = false))
             else -> updateState(getState().copy(loading = false))
         }
+    }
+
+    private fun generateRandomColorList(newTvShowsSize: Int) {
+        repeat(newTvShowsSize) {
+            list.add(randomColor())
+        }
+        updateState(getState().copy(backgroundColor = getState().backgroundColor + list))
     }
 }

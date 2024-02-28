@@ -14,8 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -33,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ir.hossein.notekmm.android.utilities.randomColor
 import ir.hossein.notekmm.domain.model.TvShow
 import org.koin.androidx.compose.koinViewModel
 
@@ -70,10 +68,10 @@ fun ShowTvShowsList(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(state.tvShows) {
+            itemsIndexed(state.tvShows) { int, item ->
                 TvShowItem(
-                    tvShow = it,
-                    backgroundColor = randomColor()
+                    tvShow = item,
+                    backgroundColor = state.backgroundColor[int]
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
