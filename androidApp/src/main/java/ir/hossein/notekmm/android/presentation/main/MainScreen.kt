@@ -1,5 +1,10 @@
 package ir.hossein.notekmm.android.presentation.main
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
@@ -29,7 +34,7 @@ fun MainScreen() {
 
     Scaffold(bottomBar = {
         BottomBar(
-            gotoNotes = { route -> navController.navigateTo(route = route) },
+            gotoNotes = { navController.popBackStack() },
             gotoAddNote = { route -> navController.navigateTo(route = route) },
             gotoTvShows = { route -> navController.navigateTo(route = route) },
         )
@@ -42,7 +47,17 @@ fun MainScreen() {
             composable(route = Constant.NOTES_ROUTE) {
                 NotesScreen()
             }
-            composable(route = Constant.ADD_NOTE_ROUTE) {
+            composable(
+                route = Constant.ADD_NOTE_ROUTE,
+                enterTransition = {
+                    fadeIn(
+                        animationSpec = tween(300, easing = LinearEasing)
+                    ) + slideIntoContainer(
+                        animationSpec = tween(300, easing = EaseIn),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Up
+                    )
+                },
+            ) {
                 AddNoteScreen(
                     gotoNotes = {
                         navController.navigateTo(route = BottomBarItems.Notes.route)

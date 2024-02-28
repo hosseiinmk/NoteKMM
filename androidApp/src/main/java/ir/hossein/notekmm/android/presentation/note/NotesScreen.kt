@@ -3,11 +3,8 @@ package ir.hossein.notekmm.android.presentation.note
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import ir.hossein.notekmm.android.utilities.randomColor
 import ir.hossein.notekmm.domain.model.Note
 import org.koin.androidx.compose.koinViewModel
 
@@ -44,6 +42,7 @@ fun NotesScreen(
             items(state.notes) { note ->
                 NotesItem(
                     note = note,
+                    backgroundColor = randomColor(),
                     deleteNote = { viewModel.deleteNote(note = note) }
                 )
             }
@@ -54,6 +53,7 @@ fun NotesScreen(
 @Composable
 fun NotesItem(
     note: Note,
+    backgroundColor: Color,
     deleteNote: () -> Unit
 ) {
     ConstraintLayout(
@@ -61,7 +61,7 @@ fun NotesItem(
             .fillMaxWidth()
             .padding(8.dp)
             .clip(shape = RoundedCornerShape(8.dp))
-            .background(color = Color.LightGray)
+            .background(color = backgroundColor)
             .padding(8.dp)
     ) {
         val (column, deleteBtn) = createRefs()

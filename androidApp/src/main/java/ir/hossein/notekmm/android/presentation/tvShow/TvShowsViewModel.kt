@@ -14,35 +14,32 @@ class TvShowsViewModel(
     private val _state = mutableStateOf(TvShowsUiState())
     val state = _state
 
-    init {
-        getTvShows(false)
-    }
+    init { getTvShows() }
 
     private fun getState() = state.value
 
-    private fun updateState(newState: TvShowsUiState) {
-        _state.value = newState
+    private fun updateState(newState: TvShowsUiState) { _state.value = newState }
+
+    fun loadNextPage() {
+        updateState(getState().copy(page = getState().page + 1, loadingMore = true))
+        getTvShows()
     }
 
-    fun loadMore() {
-        nextPage()
-        getTvShows(true)
-    }
-
-    private fun getTvShows(loadingMore: Boolean) {
-        enableLoading(loadingMore)
+    private fun getTvShows() {
+        showLoading()
         viewModelScope.launch {
             getTvShowsUseCase(_state.value.page).let { response ->
-                when(response) {
+                when (response) {
                     is ApiResponse.OnSuccess -> {
                         response.data.collect { newTvShows ->
                             updateState(getState().copy(tvShows = getState().tvShows + newTvShows))
-                            disableLoading(loadingMore)
+                            hideLoading()
                         }
                     }
+
                     is ApiResponse.OnFailure -> {
-                        previousPage()
-                        disableLoading(true)
+                        updateState(getState().copy(page = getState().page - 1))
+                        hideLoading()
                         println(response.message)
                     }
                 }
@@ -50,25 +47,17 @@ class TvShowsViewModel(
         }
     }
 
-    private fun enableLoading(loadingMore: Boolean) {
-        when(loadingMore) {
-            false -> updateState(getState().copy(isLoading = true))
-            true -> updateState(getState().copy(isLoadingMore = true))
+    private fun showLoading() {
+        when (getState().loadingMore) {
+            true -> updateState(getState().copy(loadingMore = true))
+            else -> updateState(getState().copy(loading = true))
         }
     }
 
-    private fun disableLoading(loadingMore: Boolean) {
-        when(loadingMore) {
-            false -> updateState(getState().copy(isLoading = false))
-            true -> updateState(getState().copy(isLoadingMore = false))
+    private fun hideLoading() {
+        when (getState().loadingMore) {
+            true -> updateState(getState().copy(loadingMore = false))
+            else -> updateState(getState().copy(loading = false))
         }
-    }
-
-    private fun nextPage() {
-        updateState(getState().copy(page = getState().page + 1))
-    }
-
-    private fun previousPage() {
-        updateState(getState().copy(page = getState().page - 1))
     }
 }
