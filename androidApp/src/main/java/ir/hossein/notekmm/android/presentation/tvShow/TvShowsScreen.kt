@@ -68,10 +68,10 @@ fun ShowTvShowsList(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            itemsIndexed(state.tvShows) { int, item ->
+            itemsIndexed(state.tvShows) { position, item ->
                 TvShowItem(
                     tvShow = item,
-                    backgroundColor = state.backgroundColor[int]
+                    backgroundColor = state.backgroundColor[position]
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }

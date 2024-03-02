@@ -20,7 +20,9 @@ class NoteRepositoryImpl(driver: NoteDatabaseDriverFactory) : NoteRepository {
     }
 
     override suspend fun getNotes(): Flow<List<Note>> =
-        dbQuery.getNotes(::mapToDomain).asFlow().map { it.executeAsList() }
+        dbQuery.transactionWithResult {
+            dbQuery.getNotes(::mapToDomain).asFlow().map { it.executeAsList() }
+        }
 
     private fun mapToDomain(
         id: Long,
@@ -29,8 +31,6 @@ class NoteRepositoryImpl(driver: NoteDatabaseDriverFactory) : NoteRepository {
     ): Note = Note(id = id.toInt(), title = title, content = content)
 
     override suspend fun deleteNote(note: Note) {
-        dbQuery.transaction {
-            dbQuery.deleteNote(id = note.id.toLong())
-        }
+        dbQuery.deleteNote(id = note.id.toLong())
     }
 }

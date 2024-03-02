@@ -12,11 +12,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ir.hossein.notekmm.domain.model.Note
 import org.koin.androidx.compose.koinViewModel
@@ -27,7 +27,7 @@ fun AddNoteScreen(
     gotoNotes: () -> Unit
 ) {
 
-    val state by viewModel.state
+    val state by viewModel.state().collectAsState()
 
     Column(
         Modifier
@@ -38,24 +38,30 @@ fun AddNoteScreen(
     ) {
         TextField(
             value = state.title,
-            onValueChange = { viewModel.updateState(state.copy(title = it)) },
-            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
+            onValueChange = { viewModel.updateState { copy(title = it) } },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
             placeholder = { Text(text = "title") }
         )
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = state.content,
-            onValueChange = { viewModel.updateState(state.copy(content = it)) },
-            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
+            onValueChange = { viewModel.updateState { copy(content = it) } },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
             placeholder = { Text(text = "Content") }
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
                 viewModel.addNote(Note(title = state.title, content = state.content))
-                gotoNotes()
+//                gotoNotes()
             },
-            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp)),
         ) {
             Text(text = "Add Note")
         }

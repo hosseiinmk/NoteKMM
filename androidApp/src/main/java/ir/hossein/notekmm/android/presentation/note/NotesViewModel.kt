@@ -1,36 +1,45 @@
 package ir.hossein.notekmm.android.presentation.note
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import ir.hossein.notekmm.android.core.BaseViewModel
+import ir.hossein.notekmm.android.utilities.generateRandomColorList
 import ir.hossein.notekmm.domain.model.Note
 import ir.hossein.notekmm.domain.usecase.DeleteNoteUseCase
 import ir.hossein.notekmm.domain.usecase.GetNotesUseCase
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 class NotesViewModel(
     private val getNotesUseCase: GetNotesUseCase,
     private val deleteNoteUseCase: DeleteNoteUseCase,
-) : ViewModel() {
-
-    private val _state = mutableStateOf(NotesUiState())
-    val state = _state
+) : BaseViewModel<NotesUiState>(NotesUiState()) {
 
     init {
         getNotes()
     }
 
     private fun getNotes() {
-        viewModelScope.launch {
-            getNotesUseCase().collect {
-                _state.value = state.value.copy(notes = it)
+        toggleLoading()
+        baseViewModelScope(dispatcher = Dispatchers.IO) {
+            getNotesUseCase().collect { notes ->
+                updateState {
+                    copy(
+                        notes = notes,
+                        backgroundColor = generateRandomColorList(itemsSize = notes.size),
+                        loading = false,
+                        empty = notes.isEmpty()
+                    )
+                }
             }
         }
     }
 
     fun deleteNote(note: Note) {
-        viewModelScope.launch {
+        baseViewModelScope {
             deleteNoteUseCase(note = note)
+            if (stateValue().notes.isEmpty()) updateState { copy(empty = true) }
         }
+    }
+
+    private fun toggleLoading() {
+        updateState { copy(loading = !stateValue().loading) }
     }
 }
