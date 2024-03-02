@@ -33,7 +33,7 @@ class NotesViewModel(
     }
 
     fun deleteNote(note: Note) {
-        baseViewModelScope {
+        baseViewModelScope(dispatcher = Dispatchers.IO) {
             deleteNoteUseCase(note = note)
             if (stateValue().notes.isEmpty()) updateState { copy(empty = true) }
         }

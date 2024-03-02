@@ -64,7 +64,7 @@ fun NotesList(
     deleteNote: (Note) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(state.notes) { position, note ->
+        itemsIndexed(state.notes, key = { index, _ -> state.notes[index].id }) { position, note ->
             NotesItem(
                 modifier = Modifier
                     .animateItemPlacement()
