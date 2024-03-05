@@ -11,12 +11,12 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,9 +39,15 @@ fun MainScreen() {
 
     Scaffold(bottomBar = {
         BottomBar(
-            gotoNotes = { route -> navController.navigateTo(currentRoute = currentRoute, route = route) },
-            gotoAddNote = { route -> navController.navigateTo(currentRoute = currentRoute, route = route) },
-            gotoTvShows = { route -> navController.navigateTo(currentRoute = currentRoute, route = route) },
+            gotoNotes = { route ->
+                navController.navigateTo(currentRoute = currentRoute, route = route)
+            },
+            gotoAddNote = { route ->
+                navController.navigateTo(currentRoute = currentRoute, route = route)
+            },
+            gotoTvShows = { route ->
+                navController.navigateTo(currentRoute = currentRoute, route = route)
+            },
         )
     }) {
         NavHost(
@@ -65,14 +71,20 @@ fun MainScreen() {
             ) {
                 AddNoteScreen(
                     gotoNotes = {
-                        navController.navigateTo(currentRoute = currentRoute, route = BottomBarItems.Notes.route)
+                        navController.navigateTo(
+                            currentRoute = currentRoute,
+                            route = BottomBarItems.Notes.route
+                        )
                     }
                 )
             }
             composable(route = Constant.TV_SHOWS) {
                 TvShowsScreen(
                     onBack = {
-                        navController.navigateTo(currentRoute = currentRoute, route = BottomBarItems.Notes.route)
+                        navController.navigateTo(
+                            currentRoute = currentRoute,
+                            route = BottomBarItems.Notes.route
+                        )
                     }
                 )
             }
@@ -105,8 +117,7 @@ fun BottomBar(
             FloatingActionButton(
                 onClick = { gotoAddNote(BottomBarItems.AddNote.route) },
                 modifier = Modifier.clip(RoundedCornerShape(50.dp)),
-                containerColor = Color(0xFF0E86D4),
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
                     imageVector = BottomBarItems.AddNote.icon,
@@ -114,6 +125,6 @@ fun BottomBar(
                 )
             }
         },
-        containerColor = Color(0xFFf2f2f2)
+        containerColor = MaterialTheme.colorScheme.surface
     )
 }

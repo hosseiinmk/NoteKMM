@@ -8,5 +8,6 @@ data class TvShowsUiState(
     val tvShows: List<TvShow> = emptyList(),
     val loading: Boolean = false,
     val loadingMore: Boolean = false,
+    val darkTheme: Boolean = false,
     val backgroundColor: List<Color> = emptyList()
 )

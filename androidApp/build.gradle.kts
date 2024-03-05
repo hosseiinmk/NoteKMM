@@ -57,5 +57,5 @@ dependencies {
     // Coil
     implementation(libs.coil)
     // Constraint Layout
-    implementation(libs.constraint.layout)
+    // implementation(libs.constraint.layout)
 }

@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,15 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
-import ir.hossein.notekmm.android.presentation.tvShow.ShowLoading
+import ir.hossein.notekmm.android.presentation.loading.LoadingScreen
 import ir.hossein.notekmm.domain.model.Note
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NotesScreen(
-    viewModel: NotesViewModel = koinViewModel()
+    viewModel: NotesViewModel = koinViewModel(),
 ) {
 
     val state by viewModel.state().collectAsState()
@@ -42,17 +42,23 @@ fun NotesScreen(
     ) { loading ->
         when (loading) {
             false -> {
-                AnimatedContent(targetState = state.empty, label = "") {isEmpty ->
+                AnimatedContent(targetState = state.empty, label = "") { isEmpty ->
                     when (isEmpty) {
-                        false -> NotesList(
-                            state = state,
-                            deleteNote = { note -> viewModel.deleteNote(note = note) }
-                        )
+                        false -> {
+                            NotesList(state = state) { note, position ->
+                                viewModel.deleteNote(
+                                    note = note,
+                                    position = position
+                                )
+                            }
+                        }
+
                         else -> EmptyScreen()
                     }
                 }
             }
-            true -> ShowLoading()
+
+            else -> LoadingScreen()
         }
     }
 }
@@ -61,10 +67,10 @@ fun NotesScreen(
 @Composable
 fun NotesList(
     state: NotesUiState,
-    deleteNote: (Note) -> Unit
+    deleteNote: (Note, Int) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(state.notes, key = { index, _ -> state.notes[index].id }) { position, note ->
+        itemsIndexed(items = state.notes, key = { _, item -> item.id }) { position, note ->
             NotesItem(
                 modifier = Modifier
                     .animateItemPlacement()
@@ -74,7 +80,7 @@ fun NotesList(
                     .background(color = state.backgroundColor[position])
                     .padding(8.dp),
                 note = note,
-            ) { deleteNote(note) }
+            ) { deleteNote(note, position) }
         }
     }
 }
@@ -85,24 +91,15 @@ fun NotesItem(
     note: Note,
     deleteNote: () -> Unit
 ) {
-    ConstraintLayout(modifier = modifier) {
-
-        val (column, deleteBtn) = createRefs()
-
-        Column(Modifier.constrainAs(column) {
-            start.linkTo(parent.start)
-            top.linkTo(parent.top)
-            bottom.linkTo(parent.bottom)
-            height = Dimension.fillToConstraints
-        }) {
+    Row(modifier = modifier) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(text = note.title)
             Text(text = note.content)
         }
-        IconButton(onClick = { deleteNote() }, modifier = Modifier.constrainAs(deleteBtn) {
-            end.linkTo(parent.end)
-            top.linkTo(parent.top)
-        }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+        Box {
+            IconButton(onClick = { deleteNote() }) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+            }
         }
     }
 }

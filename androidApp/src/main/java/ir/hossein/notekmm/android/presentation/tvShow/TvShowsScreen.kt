@@ -23,8 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import ir.hossein.notekmm.android.presentation.loading.LoadingScreen
 import ir.hossein.notekmm.domain.model.TvShow
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,11 +42,11 @@ fun TvShowsScreen(
     onBack: () -> Unit
 ) {
 
-    val state by remember { viewModel.state }
+    val state by viewModel.state().collectAsState()
 
     AnimatedContent(targetState = state.loading, label = "Animated Content") { isLoading ->
         when (isLoading) {
-            true -> ShowLoading()
+            true -> LoadingScreen()
             false -> ShowTvShowsList(state = state, loadNextPage = { viewModel.loadNextPage() })
         }
     }
@@ -64,7 +65,9 @@ fun ShowTvShowsList(
         contentAlignment = Alignment.Center
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -82,7 +85,7 @@ fun ShowTvShowsList(
                     contentAlignment = Alignment.Center
                 ) { isLoadingMore ->
                     when (isLoadingMore) {
-                        true -> ShowLoading()
+                        true -> LoadingScreen()
                         else -> {
                             IconButton(onClick = { loadNextPage() }) {
                                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
@@ -123,15 +126,5 @@ fun TvShowItem(
             Text(text = "start on: ${tvShow.startDate}")
             Text(text = tvShow.status)
         }
-    }
-}
-
-@Composable
-fun ShowLoading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
     }
 }
