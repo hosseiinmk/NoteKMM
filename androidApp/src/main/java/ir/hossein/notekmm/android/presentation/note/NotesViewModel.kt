@@ -1,9 +1,7 @@
 package ir.hossein.notekmm.android.presentation.note
 
-import androidx.compose.ui.graphics.Color
 import ir.hossein.notekmm.android.core.BaseViewModel
 import ir.hossein.notekmm.android.utilities.generateColorList
-import ir.hossein.notekmm.android.utilities.log
 import ir.hossein.notekmm.domain.model.Note
 import ir.hossein.notekmm.domain.usecase.DeleteNoteUseCase
 import ir.hossein.notekmm.domain.usecase.GetNotesUseCase
@@ -19,31 +17,32 @@ class NotesViewModel(
     }
 
     private fun getNotes() {
-        toggleLoading()
+        updateState { copy(loading = true) }
         baseViewModelScope(dispatcher = Dispatchers.IO) {
             getNotesUseCase().collect { notes ->
                 updateState {
                     copy(
                         notes = notes,
-                        empty = notes.isEmpty(),
-                        backgroundColor = generateColors(notes.size),
-                        loading = false
+                        empty = notes.isEmpty()
                     )
                 }
+                setTheme(notes.size)
             }
         }
     }
 
-    fun deleteNote(note: Note, position: Int) {
+    fun deleteNote(note: Note) {
         baseViewModelScope(dispatcher = Dispatchers.IO) {
             deleteNoteUseCase(note = note)
-            if (stateValue().notes.isEmpty()) updateState { copy(empty = true) }
         }
     }
 
-    private fun toggleLoading() {
-        updateState { copy(loading = !stateValue().loading) }
+    fun setTheme(size: Int) {
+        updateState { copy(loading = true) }
+        generateColorList(size = size).let { colors ->
+            updateState {
+                copy(backgroundColor = colors, loading = false)
+            }
+        }
     }
-
-    private fun generateColors(size: Int): List<Color> = generateColorList(size = size)
 }

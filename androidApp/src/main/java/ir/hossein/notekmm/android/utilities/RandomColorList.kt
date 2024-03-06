@@ -8,12 +8,12 @@ private val list = mutableListOf<Color>()
 fun generateColorList(size: Int): List<Color> {
     list.clear()
     repeat(size) {
-        list.add(randomColor(globalStateValue().darkTheme))
+        list.add(randomColor())
     }
     return list
 }
 
-private fun randomColor(darkTheme: Boolean): Color = (when (darkTheme) {
+fun randomColor(): Color = (when (globalStateValue().darkTheme) {
     true -> {
         listOf(
             Color(0xFF678283),

@@ -31,10 +31,12 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NotesScreen(
-    viewModel: NotesViewModel = koinViewModel(),
+    viewModel: NotesViewModel = koinViewModel()
 ) {
 
     val state by viewModel.state().collectAsState()
+
+    viewModel.setTheme(state.notes.size)
 
     AnimatedContent(
         targetState = state.loading,
@@ -45,20 +47,22 @@ fun NotesScreen(
                 AnimatedContent(targetState = state.empty, label = "") { isEmpty ->
                     when (isEmpty) {
                         false -> {
-                            NotesList(state = state) { note, position ->
-                                viewModel.deleteNote(
-                                    note = note,
-                                    position = position
-                                )
-                            }
+                            NotesList(
+                                state = state,
+                                deleteNote = { note -> viewModel.deleteNote(note = note) }
+                            )
                         }
 
-                        else -> EmptyScreen()
+                        true -> {
+                            EmptyScreen()
+                        }
                     }
                 }
             }
 
-            else -> LoadingScreen()
+            true -> {
+                LoadingScreen()
+            }
         }
     }
 }
@@ -67,7 +71,7 @@ fun NotesScreen(
 @Composable
 fun NotesList(
     state: NotesUiState,
-    deleteNote: (Note, Int) -> Unit
+    deleteNote: (Note) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(items = state.notes, key = { _, item -> item.id }) { position, note ->
@@ -80,7 +84,7 @@ fun NotesList(
                     .background(color = state.backgroundColor[position])
                     .padding(8.dp),
                 note = note,
-            ) { deleteNote(note, position) }
+            ) { deleteNote(note) }
         }
     }
 }
