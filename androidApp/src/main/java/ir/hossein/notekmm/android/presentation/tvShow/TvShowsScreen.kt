@@ -2,6 +2,7 @@ package ir.hossein.notekmm.android.presentation.tvShow
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -28,10 +28,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import ir.hossein.notekmm.android.core.globalStateValue
 import ir.hossein.notekmm.android.presentation.loading.LoadingScreen
 import ir.hossein.notekmm.domain.model.TvShow
 import org.koin.androidx.compose.koinViewModel
@@ -44,16 +44,21 @@ fun TvShowsScreen(
 
     val state by viewModel.state().collectAsState()
 
+    if (globalStateValue().darkTheme)
+    
+    viewModel.setTheme(state.tvShows.size)
+
     AnimatedContent(targetState = state.loading, label = "Animated Content") { isLoading ->
         when (isLoading) {
-            true -> LoadingScreen()
             false -> ShowTvShowsList(state = state, loadNextPage = { viewModel.loadNextPage() })
+            true -> LoadingScreen()
         }
     }
 
     BackHandler { onBack() }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShowTvShowsList(
     state: TvShowsUiState,
@@ -71,10 +76,14 @@ fun ShowTvShowsList(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            itemsIndexed(state.tvShows) { position, item ->
+            itemsIndexed(state.tvShows, key = { _, item -> item.id }) { position, item ->
                 TvShowItem(
-                    tvShow = item,
-                    backgroundColor = state.backgroundColor[position]
+                    modifier = Modifier
+                        .animateItemPlacement()
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(state.backgroundColor[position]),
+                    tvShow = item
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -100,15 +109,10 @@ fun ShowTvShowsList(
 
 @Composable
 fun TvShowItem(
-    tvShow: TvShow,
-    backgroundColor: Color
+    modifier: Modifier,
+    tvShow: TvShow
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(backgroundColor)
-    ) {
+    Row(modifier = modifier) {
         AsyncImage(
             model = tvShow.thumbnail,
             contentDescription = null,

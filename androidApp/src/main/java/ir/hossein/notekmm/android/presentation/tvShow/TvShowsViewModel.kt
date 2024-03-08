@@ -2,6 +2,8 @@ package ir.hossein.notekmm.android.presentation.tvShow
 
 import androidx.lifecycle.viewModelScope
 import ir.hossein.notekmm.android.core.BaseViewModel
+import ir.hossein.notekmm.android.utilities.generateColorList
+import ir.hossein.notekmm.android.utilities.log
 import ir.hossein.notekmm.domain.usecase.GetTvShowsUseCase
 import ir.hossein.notekmm.utilities.ApiResponse
 import kotlinx.coroutines.launch
@@ -14,11 +16,6 @@ class TvShowsViewModel(
         getTvShows()
     }
 
-    fun loadNextPage() {
-        updateState { copy(page = stateValue().page + 1, loadingMore = true) }
-        getTvShows()
-    }
-
     private fun getTvShows() {
         showLoading()
         viewModelScope.launch {
@@ -26,10 +23,10 @@ class TvShowsViewModel(
                 when (response) {
                     is ApiResponse.OnSuccess -> {
                         response.data.collect { newTvShows ->
-                            hideLoading()
                             updateState {
                                 copy(tvShows = stateValue().tvShows + newTvShows)
                             }
+                            setTheme(stateValue().tvShows.size)
                         }
                     }
 
@@ -43,11 +40,22 @@ class TvShowsViewModel(
         }
     }
 
-    private fun showLoading() {
-        when (stateValue().loadingMore) {
-            true -> updateState { copy(loadingMore = true) }
-            else -> updateState { copy(loading = true) }
+    fun setTheme(size: Int) {
+        generateColorList(size = size).let { colors ->
+            updateState {
+                copy(backgroundColor = colors)
+            }
+            hideLoading()
         }
+    }
+
+    fun loadNextPage() {
+        updateState { copy(page = stateValue().page + 1, loadingMore = true) }
+        getTvShows()
+    }
+
+    private fun showLoading() {
+        if (!stateValue().loadingMore) updateState { copy(loading = true) }
     }
 
     private fun hideLoading() {
