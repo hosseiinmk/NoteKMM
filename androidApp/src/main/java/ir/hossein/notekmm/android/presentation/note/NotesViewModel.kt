@@ -21,10 +21,7 @@ class NotesViewModel(
         baseViewModelScope(dispatcher = Dispatchers.IO) {
             getNotesUseCase().collect { notes ->
                 updateState {
-                    copy(
-                        notes = notes,
-                        empty = notes.isEmpty()
-                    )
+                    copy(notes = notes, empty = notes.isEmpty())
                 }
                 setTheme(notes.size)
             }

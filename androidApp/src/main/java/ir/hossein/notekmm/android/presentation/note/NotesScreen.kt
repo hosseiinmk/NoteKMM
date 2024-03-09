@@ -19,12 +19,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import ir.hossein.notekmm.android.core.globalStateValue
 import ir.hossein.notekmm.android.presentation.loading.LoadingScreen
 import ir.hossein.notekmm.domain.model.Note
 import org.koin.androidx.compose.koinViewModel
@@ -36,7 +38,9 @@ fun NotesScreen(
 
     val state by viewModel.state().collectAsState()
 
-    viewModel.setTheme(state.notes.size)
+    LaunchedEffect(key1 = globalStateValue().darkTheme, block = {
+        if (!state.loading) viewModel.setTheme(state.notes.size)
+    })
 
     AnimatedContent(
         targetState = state.loading,
@@ -53,16 +57,12 @@ fun NotesScreen(
                             )
                         }
 
-                        true -> {
-                            EmptyScreen()
-                        }
+                        true -> { EmptyScreen() }
                     }
                 }
             }
 
-            true -> {
-                LoadingScreen()
-            }
+            true -> { LoadingScreen() }
         }
     }
 }

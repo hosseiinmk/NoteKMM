@@ -3,7 +3,6 @@ package ir.hossein.notekmm.android.presentation.tvShow
 import androidx.lifecycle.viewModelScope
 import ir.hossein.notekmm.android.core.BaseViewModel
 import ir.hossein.notekmm.android.utilities.generateColorList
-import ir.hossein.notekmm.android.utilities.log
 import ir.hossein.notekmm.domain.usecase.GetTvShowsUseCase
 import ir.hossein.notekmm.utilities.ApiResponse
 import kotlinx.coroutines.launch
@@ -17,8 +16,8 @@ class TvShowsViewModel(
     }
 
     private fun getTvShows() {
-        showLoading()
         viewModelScope.launch {
+            showLoading()
             getTvShowsUseCase(stateValue().page).let { response ->
                 when (response) {
                     is ApiResponse.OnSuccess -> {
@@ -41,9 +40,10 @@ class TvShowsViewModel(
     }
 
     fun setTheme(size: Int) {
+        updateState { copy(loading = true) }
         generateColorList(size = size).let { colors ->
             updateState {
-                copy(backgroundColor = colors)
+                copy(backgroundColor = colors, loading = false)
             }
             hideLoading()
         }
@@ -65,4 +65,3 @@ class TvShowsViewModel(
         }
     }
 }
-

@@ -3,10 +3,8 @@ package ir.hossein.notekmm.android.utilities
 import androidx.compose.ui.graphics.Color
 import ir.hossein.notekmm.android.core.globalStateValue
 
-private val list = mutableListOf<Color>()
-
 fun generateColorList(size: Int): List<Color> {
-    list.clear()
+    val list = mutableListOf<Color>()
     repeat(size) {
         list.add(randomColor())
     }

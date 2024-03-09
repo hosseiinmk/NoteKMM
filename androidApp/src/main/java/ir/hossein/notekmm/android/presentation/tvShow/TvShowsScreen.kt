@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,9 +44,9 @@ fun TvShowsScreen(
 
     val state by viewModel.state().collectAsState()
 
-    if (globalStateValue().darkTheme)
-    
-    viewModel.setTheme(state.tvShows.size)
+    LaunchedEffect(key1 = globalStateValue().darkTheme, block = {
+        if (!state.loading) viewModel.setTheme(state.tvShows.size)
+    })
 
     AnimatedContent(targetState = state.loading, label = "Animated Content") { isLoading ->
         when (isLoading) {
@@ -64,41 +64,35 @@ fun ShowTvShowsList(
     state: TvShowsUiState,
     loadNextPage: () -> Unit
 ) {
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            itemsIndexed(state.tvShows, key = { _, item -> item.id }) { position, item ->
-                TvShowItem(
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(state.backgroundColor[position]),
-                    tvShow = item
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            item {
-                AnimatedContent(
-                    targetState = state.loadingMore,
-                    label = "",
-                    contentAlignment = Alignment.Center
-                ) { isLoadingMore ->
-                    when (isLoadingMore) {
-                        true -> LoadingScreen()
-                        else -> {
-                            IconButton(onClick = { loadNextPage() }) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                            }
+        itemsIndexed(state.tvShows, key = { _, item -> item.id }) { position, item ->
+            TvShowItem(
+                modifier = Modifier
+                    .animateItemPlacement()
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(color = state.backgroundColor[position]),
+                tvShow = item
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        item {
+            AnimatedContent(
+                targetState = state.loadingMore,
+                label = "",
+                contentAlignment = Alignment.Center
+            ) { isLoadingMore ->
+                when (isLoadingMore) {
+                    true -> LoadingScreen()
+                    else -> {
+                        IconButton(onClick = { loadNextPage() }) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
                         }
                     }
                 }
