@@ -6,21 +6,17 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ir.hossein.notekmm.android.presentation.addNote.AddNoteScreen
 import ir.hossein.notekmm.android.presentation.note.NotesScreen
@@ -34,22 +30,15 @@ fun MainScreen() {
 
     val navController = rememberNavController()
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    Scaffold(bottomBar = {
-        BottomBar(
-            gotoNotes = { route ->
-                navController.navigateTo(currentRoute = currentRoute, route = route)
-            },
-            gotoAddNote = { route ->
-                navController.navigateTo(currentRoute = currentRoute, route = route)
-            },
-            gotoTvShows = { route ->
-                navController.navigateTo(currentRoute = currentRoute, route = route)
-            },
-        )
-    }) {
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(
+                goToDestination = { destination ->
+                    navController.navigateTo(route = destination)
+                }
+            )
+        }
+    ) {
         NavHost(
             modifier = Modifier.padding(it),
             navController = navController,
@@ -71,20 +60,14 @@ fun MainScreen() {
             ) {
                 AddNoteScreen(
                     gotoNotes = {
-                        navController.navigateTo(
-                            currentRoute = currentRoute,
-                            route = BottomBarItems.Notes.route
-                        )
+                        navController.navigateTo(route = BottomBarItems.Notes.route)
                     }
                 )
             }
             composable(route = Constant.TV_SHOWS) {
                 TvShowsScreen(
                     onBack = {
-                        navController.navigateTo(
-                            currentRoute = currentRoute,
-                            route = BottomBarItems.Notes.route
-                        )
+                        navController.navigateTo(route = BottomBarItems.Notes.route)
                     }
                 )
             }
@@ -93,38 +76,33 @@ fun MainScreen() {
 }
 
 @Composable
-fun BottomBar(
-    gotoNotes: (String) -> Unit,
-    gotoAddNote: (String) -> Unit,
-    gotoTvShows: (String) -> Unit
+fun BottomNavigationBar(
+    goToDestination: (String) -> Unit
 ) {
-    BottomAppBar(
-        actions = {
-            IconButton(onClick = { gotoNotes(BottomBarItems.Notes.route) }) {
-                Icon(
-                    imageVector = BottomBarItems.Notes.icon,
-                    contentDescription = BottomBarItems.Notes.label
-                )
-            }
-            IconButton(onClick = { gotoTvShows(BottomBarItems.TvShows.route) }) {
-                Icon(
-                    imageVector = BottomBarItems.TvShows.icon,
-                    contentDescription = BottomBarItems.TvShows.label
-                )
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { gotoAddNote(BottomBarItems.AddNote.route) },
-                modifier = Modifier.clip(RoundedCornerShape(50.dp)),
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(
-                    imageVector = BottomBarItems.AddNote.icon,
-                    contentDescription = BottomBarItems.AddNote.label
-                )
-            }
-        },
-        containerColor = MaterialTheme.colorScheme.surface
+
+    val items = listOf(
+        BottomBarItems.Notes,
+        BottomBarItems.TvShows,
+        BottomBarItems.AddNote
     )
+
+    val selectedItem = remember { mutableIntStateOf(0) }
+
+    NavigationBar {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                selected = selectedItem.intValue == index,
+                onClick = {
+                    goToDestination(item.route)
+                    selectedItem.intValue = index
+                },
+                icon = {
+                    Icon(imageVector = item.icon, contentDescription = null)
+                },
+                label = {
+                    Text(text = item.label)
+                }
+            )
+        }
+    }
 }

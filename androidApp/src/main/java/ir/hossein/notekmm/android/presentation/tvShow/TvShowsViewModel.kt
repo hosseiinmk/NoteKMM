@@ -16,8 +16,8 @@ class TvShowsViewModel(
     }
 
     private fun getTvShows() {
+        showLoading()
         viewModelScope.launch {
-            showLoading()
             getTvShowsUseCase(stateValue().page).let { response ->
                 when (response) {
                     is ApiResponse.OnSuccess -> {
